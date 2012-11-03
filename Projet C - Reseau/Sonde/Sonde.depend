@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1351854087 source:c:\users\brice\desktop\projets lpie\projet c\sonde\main.c
+	<stdio.h>
+	<stdlib.h>
+	<pthread.h>
+
