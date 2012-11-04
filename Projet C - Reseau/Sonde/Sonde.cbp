@@ -30,13 +30,25 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-lpthread" />
 		</Compiler>
 		<Linker>
-			<Add library="..\pThread\lib\libpthreadGC2.a" />
+			<Add library="libws2_32.a" />
+			<Add library="D:\GitHub\Projets_LPIE\Projet C - Reseau\pThread\lib\pthreadVC2.lib" />
+			<Add library="D:\GitHub\Projets_LPIE\Projet C - Reseau\pThread\lib\libpthreadGC2.a" />
 		</Linker>
+		<Unit filename="GestionReseau.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="GestionReseau.h" />
+		<Unit filename="ListeChainee.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ListeChainee.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="stdafx.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
