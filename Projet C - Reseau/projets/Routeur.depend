@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1352315481 source:d:\github\projets_lpie\projet c - reseau\projets\src\listechainee.c
+	"stdafx.h"
+
+1352315468 source:d:\github\projets_lpie\projet c - reseau\projets\src\utils.c
+	"stdafx.h"
+
+1352315480 source:d:\github\projets_lpie\projet c - reseau\projets\src\gestionreseau.c
+	"stdafx.h"
+
+1352320296 source:d:\github\projets_lpie\projet c - reseau\projets\src\main_router.c
+	"stdafx.h"
+

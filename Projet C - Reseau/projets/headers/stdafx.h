@@ -7,6 +7,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <math.h>
+#include <time.h>
+
 
 
 /** -------------------------------
@@ -32,6 +35,8 @@
     ------------------------------- **/
 #include "GestionReseau.h"
 #include "ListeChainee.h"
+#include "simSonde.h"
+#include "utils.h"
 
 
 
@@ -40,7 +45,14 @@
     ------------------------------- **/
 
 #define CONFG_PORT            23
-#define HOST 		    INADDR_ANY
-#define NB_MAX_CONN 	5
+#define HOST 		          INADDR_ANY
+#define NB_MAX_CONN 	      5
+
+#define CONFIG_PORT_SERVER      48000  // Define le port du routeur
+#define CONFIG_PORT_ECOUTE      48000  // Define le port du routeur
+#define CONFIG_PORT_COORD       49000  // Define le port du routeur
+
+#define CONFIG_TEMPS_MESURE     20      // Definie le temps entre chaque mesure de température en secondes +/- un delais random
+#define CONFIG_TEMPS_RAND       3       // Definir la limite max de temps aléatoire a ajouter ou retrancher au delais
 
 #endif //STDAFX_H

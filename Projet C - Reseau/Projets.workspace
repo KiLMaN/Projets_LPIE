@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Workspace">
-		<Project filename="Sonde/Sonde.cbp" active="1" />
-		<Project filename="C:/Users/Brice/Desktop/Projets LPIE/Projet C/test/test.cbp" />
+		<Project filename="projets/Coordinateur.cbp" active="1" />
+		<Project filename="projets/Routeur.cbp" />
+		<Project filename="projets/Sonde.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

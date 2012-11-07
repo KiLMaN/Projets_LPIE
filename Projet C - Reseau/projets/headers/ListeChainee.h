@@ -1,10 +1,11 @@
 #ifndef LISTE_CHAINEE_H
 #define LISTE_CHAINEE_H
 
-typedef struct t_listeChainee {
+typedef struct t_listeChainee
+{
     void * data;
     struct t_listeChainee * next;
-}ListeChainee;
+} ListeChainee;
 
 ListeChainee * CreateListe(void * pData );
 ListeChainee * AddElementListe(void * pData , ListeChainee * pListe,int position);

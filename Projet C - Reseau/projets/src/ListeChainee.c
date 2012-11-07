@@ -70,7 +70,7 @@ ListeChainee * deleteElementListe(ListeChainee * pListe,int pos)
     }
     else
     {
-         /* Parcours la liste et cherche l'emplacement */
+        /* Parcours la liste et cherche l'emplacement */
         int i = 0;
         ListeChainee * ElementListe = pListe;
         while(i+1 < pos)
@@ -120,7 +120,7 @@ ListeChainee * deleteAllElements(ListeChainee * pListe)
 void * getValueAt(ListeChainee * pListe, int index)
 {
     if(LengthListe(pListe) < index || index < 0)
-       return 0;
+        return 0;
 
 
     ListeChainee * ElementListe = pListe;
@@ -137,7 +137,7 @@ void afficherListe(ListeChainee * pListe)
     ListeChainee * elem = pListe;
     while(elem != NULL)
     {
-       // if( typeof *elem->data )
+        // if( typeof *elem->data )
         printf("Valeur : %p \n",elem->data);
         ///printf("Valeur : %i \n",*(int *)elem->data);
         elem = elem->next;
