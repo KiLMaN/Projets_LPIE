@@ -1,4 +1,6 @@
 *.cbtemp
+*.layout
+*.depend
 
 #################
 ## Eclipse
