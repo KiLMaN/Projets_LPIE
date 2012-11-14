@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="headers\stdafx.h" open="1" top="0" tabpos="2">
-		<Cursor position="959" topLine="22" />
+	<File name="headers\GestionReseau.h" open="0" top="0" tabpos="0">
+		<Cursor position="733" topLine="0" />
 	</File>
-	<File name="src\ListeChainee.c" open="0" top="0" tabpos="1">
-		<Cursor position="120" topLine="0" />
+	<File name="headers\stdafx.h" open="0" top="0" tabpos="2">
+		<Cursor position="728" topLine="16" />
+	</File>
+	<File name="src\GestionReseau.c" open="1" top="0" tabpos="0">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="src\ListeChainee.c" open="1" top="0" tabpos="2">
+		<Cursor position="2111" topLine="126" />
 	</File>
 	<File name="src\main_coordinateur.c" open="1" top="1" tabpos="1">
-		<Cursor position="4616" topLine="114" />
+		<Cursor position="2005" topLine="49" />
 	</File>
-	<File name="src\utils.c" open="0" top="0" tabpos="0">
-		<Cursor position="339" topLine="0" />
+	<File name="src\utils.c" open="1" top="0" tabpos="3">
+		<Cursor position="42" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>
