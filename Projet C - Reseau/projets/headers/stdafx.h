@@ -37,6 +37,7 @@
 #include "ListeChainee.h"
 #include "simSonde.h"
 #include "utils.h"
+#include "parserConfig.h"
 
 
 

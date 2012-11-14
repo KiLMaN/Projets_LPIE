@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
+	<ActiveTarget name="Release" />
+	<File name="headers\parserConfig.h" open="0" top="0" tabpos="2">
+		<Cursor position="190" topLine="0" />
+	</File>
+	<File name="headers\stdafx.h" open="0" top="0" tabpos="0">
+		<Cursor position="731" topLine="0" />
+	</File>
+	<File name="headers\utils.h" open="0" top="0" tabpos="0">
+		<Cursor position="252" topLine="0" />
+	</File>
+	<File name="src\main_sonde.c" open="0" top="0" tabpos="0">
+		<Cursor position="2452" topLine="51" />
+	</File>
+	<File name="src\parserConfig.c" open="0" top="0" tabpos="3">
+		<Cursor position="277" topLine="0" />
+	</File>
 </CodeBlocks_layout_file>

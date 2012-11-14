@@ -39,9 +39,9 @@ int MyRand(int Min , int Max)
 
 void MySleep(long delay)
 {
-    #ifdef __WIN32__
-        Sleep(delay);
-    #else
-        usleep(delay * 1000);
-    #endif
+#ifdef __WIN32__
+    Sleep(delay);
+#else
+    usleep(delay * 1000);
+#endif
 }

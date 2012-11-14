@@ -8,8 +8,9 @@
 		<Option virtualFolders="src\;headers\;" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\Sonde" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin\Sonde_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin\" />
+				<Option object_output="obj\debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -17,7 +18,8 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\Sonde" prefix_auto="1" extension_auto="1" />
+				<Option output="bin\Sonde_release" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin\" />
 				<Option object_output="obj\Release\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -45,6 +47,9 @@
 		<Unit filename="headers\ListeChainee.h">
 			<Option virtualFolder="headers\" />
 		</Unit>
+		<Unit filename="headers\parserConfig.h">
+			<Option virtualFolder="headers\" />
+		</Unit>
 		<Unit filename="headers\simSonde.h">
 			<Option virtualFolder="headers\" />
 		</Unit>
@@ -63,6 +68,10 @@
 			<Option virtualFolder="src\" />
 		</Unit>
 		<Unit filename="src\main_sonde.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="src\" />
+		</Unit>
+		<Unit filename="src\parserConfig.c">
 			<Option compilerVar="CC" />
 			<Option virtualFolder="src\" />
 		</Unit>

@@ -2,78 +2,78 @@
 
 void initReseau()
 {
-    #ifdef WIN32
-        WSADATA WSAData;
-        WSAStartup(MAKEWORD(2,0), &WSAData);
-    #endif
+#ifdef WIN32
+    WSADATA WSAData;
+    WSAStartup(MAKEWORD(2,0), &WSAData);
+#endif
 }
 
 void deInitReseau()
 {
-    #ifdef WIN32
-        WSACleanup();
-    #endif
+#ifdef WIN32
+    WSACleanup();
+#endif
 }
 
 MySocket creerSocketUdpClient ()
 {
-	MySocket sock = -1;
-	struct sockaddr_in exp_addr ;
+    MySocket sock = -1;
+    struct sockaddr_in exp_addr ;
 
-	sock = socket (PF_INET, SOCK_DGRAM, 0) ;
+    sock = socket (PF_INET, SOCK_DGRAM, 0) ;
 
-	if(sock > 0)
-	{
-		memset ((char *) &exp_addr,0, sizeof exp_addr) ;
-		exp_addr.sin_family = AF_INET ;
-		exp_addr.sin_addr.s_addr = INADDR_ANY ;
-		if(bind (sock, (struct sockaddr *)&exp_addr, sizeof exp_addr) == 0)
-		{
-			return sock;
-		}
-		else
-			return -1;
-	}
-	else
-		return -1;
+    if(sock > 0)
+    {
+        memset ((char *) &exp_addr,0, sizeof exp_addr) ;
+        exp_addr.sin_family = AF_INET ;
+        exp_addr.sin_addr.s_addr = INADDR_ANY ;
+        if(bind (sock, (struct sockaddr *)&exp_addr, sizeof exp_addr) == 0)
+        {
+            return sock;
+        }
+        else
+            return -1;
+    }
+    else
+        return -1;
 }
 
 MySocket creerSocketUdpServer (int portEcoute)
 {
-	MySocket sock = -1;
-	struct sockaddr_in exp_addr ;
+    MySocket sock = -1;
+    struct sockaddr_in exp_addr ;
 
-	sock = socket (PF_INET, SOCK_DGRAM, 0) ;
+    sock = socket (PF_INET, SOCK_DGRAM, 0) ;
 
-	if(sock > 0)
-	{
-		memset ((char *) &exp_addr,0, sizeof exp_addr) ;
-		exp_addr.sin_family = AF_INET ;
-		exp_addr.sin_addr.s_addr = INADDR_ANY ;
-		exp_addr.sin_port = htons (portEcoute) ;
-		if(bind (sock, (struct sockaddr *)&exp_addr, sizeof exp_addr) == 0)
-		{
-			return sock;
-		}
-		else
-			return -1;
-	}
-	else
-		return -1;
+    if(sock > 0)
+    {
+        memset ((char *) &exp_addr,0, sizeof exp_addr) ;
+        exp_addr.sin_family = AF_INET ;
+        exp_addr.sin_addr.s_addr = INADDR_ANY ;
+        exp_addr.sin_port = htons (portEcoute) ;
+        if(bind (sock, (struct sockaddr *)&exp_addr, sizeof exp_addr) == 0)
+        {
+            return sock;
+        }
+        else
+            return -1;
+    }
+    else
+        return -1;
 }
 
 int sendUdpMessageTo(MySocket socket , char * buffer , char * ipAddress , int port )
 {
-	struct sockaddr_in recv_addr;
+    struct sockaddr_in recv_addr;
 
-	//bzero ((char *) &recv_addr, sizeof recv_addr) ;
-	recv_addr.sin_family = AF_INET ;
-	recv_addr.sin_addr.s_addr = inet_addr (ipAddress) ;
-	recv_addr.sin_port = htons (port) ;
-	
-	int buffer_size = strlen(buffer)+1;
+    //bzero ((char *) &recv_addr, sizeof recv_addr) ;
+    recv_addr.sin_family = AF_INET ;
+    recv_addr.sin_addr.s_addr = inet_addr (ipAddress) ;
+    recv_addr.sin_port = htons (port) ;
 
-	return sendto (socket, buffer, buffer_size, 0, (struct sockaddr *)&recv_addr, sizeof recv_addr) ;
+    int buffer_size = strlen(buffer)+1;
+
+    return sendto (socket, buffer, buffer_size, 0, (struct sockaddr *)&recv_addr, sizeof recv_addr) ;
 }
 
 /*

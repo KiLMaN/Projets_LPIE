@@ -15,6 +15,7 @@
 ListeChainee * CreateListe(void * pData)
 {
     ListeChainee * pListe = (ListeChainee *) malloc(sizeof(ListeChainee));
+    pListe->identifiant = 0;
     pListe->data = pData;
     pListe->next = NULL;
     return pListe;
@@ -27,13 +28,15 @@ ListeChainee * CreateListe(void * pData)
     Si la position > taille de la liste alors l'element est ajouter a la fin
     Retourne la nouvelle liste
 **/
-ListeChainee * AddElementListe(void * pData , ListeChainee * pListe,int position)
+ListeChainee * AddElementListeID(void * pData , ListeChainee * pListe,int position,int id)
 {
+
     /* Si la liste est vide : On créer le premier element */
     if(pListe == NULL || position <= 0)
     {
         ListeChainee * pElement = CreateListe(pData);
         pElement->next = pListe;
+        pElement->identifiant = id;
         return pElement;
     }
     else
@@ -49,10 +52,21 @@ ListeChainee * AddElementListe(void * pData , ListeChainee * pListe,int position
         ListeChainee * pNewElem = CreateListe(pData);
         pNewElem->next = pElement->next;
         pElement->next = pNewElem;
+        pElement->identifiant = id;
         return pListe;
     }
 }
-
+/**
+    AddElementListe
+    Ajoute un element a la liste déjà éxistante et a la position voulue
+    Si la position <= 0 alors l'element est ajouter en premier
+    Si la position > taille de la liste alors l'element est ajouter a la fin
+    Retourne la nouvelle liste
+**/
+ListeChainee * AddElementListe(void * pData , ListeChainee * pListe,int position)
+{
+   return AddElementListeID(pData , pListe, position,0);
+}
 
 ListeChainee * deleteElementListe(ListeChainee * pListe,int pos)
 {
@@ -117,10 +131,24 @@ ListeChainee * deleteAllElements(ListeChainee * pListe)
     return pListe;
 }
 
+int getIDAt(ListeChainee * pListe, int index)
+{
+    if(LengthListe(pListe) < index || index < 0)
+        return -1;
+
+
+    ListeChainee * ElementListe = pListe;
+    while(index--)
+    {
+        ElementListe = ElementListe->next;
+    }
+    return ElementListe->identifiant;
+}
+
 void * getValueAt(ListeChainee * pListe, int index)
 {
     if(LengthListe(pListe) < index || index < 0)
-        return 0;
+        return NULL;
 
 
     ListeChainee * ElementListe = pListe;
@@ -129,6 +157,22 @@ void * getValueAt(ListeChainee * pListe, int index)
         ElementListe = ElementListe->next;
     }
     return ElementListe->data;
+}
+void * getValueAtID(ListeChainee * pListe, int id)
+{
+    if(LengthListe(pListe) == 0)
+        return NULL;
+
+
+    ListeChainee * ElementListe = pListe;
+    while(ElementListe != NULL)
+    {
+        if(ElementListe->identifiant == id)
+            return ElementListe->data;
+
+        ElementListe = ElementListe->next;
+    }
+    return NULL;
 }
 
 void afficherListe(ListeChainee * pListe)
