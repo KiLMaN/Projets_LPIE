@@ -44,16 +44,10 @@
 /** -------------------------------
     -------- CONFIGURATION --------
     ------------------------------- **/
-
+/*
 #define CONFG_PORT            23
 #define HOST 		          INADDR_ANY
-#define NB_MAX_CONN 	      5
+#define NB_MAX_CONN 	      5*/
 
-#define CONFIG_PORT_SERVER      48000  // Define le port du routeur
-#define CONFIG_PORT_ECOUTE      48000  // Define le port du routeur
-#define CONFIG_PORT_COORD       49000  // Define le port du routeur
-
-#define CONFIG_TEMPS_MESURE     20      // Definie le temps entre chaque mesure de température en secondes +/- un delais random
-#define CONFIG_TEMPS_RAND       3       // Definir la limite max de temps aléatoire a ajouter ou retrancher au delais
 
 #endif //STDAFX_H

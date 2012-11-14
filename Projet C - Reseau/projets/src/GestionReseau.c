@@ -15,9 +15,9 @@ void deInitReseau()
 #endif
 }
 
-MySocket creerSocketUdpClient ()
+MySocket creerSocketUdpClient (int * portBind)
 {
-    MySocket sock = -1;
+    MySocket sock = 0;
     struct sockaddr_in exp_addr ;
 
     sock = socket (PF_INET, SOCK_DGRAM, 0) ;
@@ -29,18 +29,25 @@ MySocket creerSocketUdpClient ()
         exp_addr.sin_addr.s_addr = INADDR_ANY ;
         if(bind (sock, (struct sockaddr *)&exp_addr, sizeof exp_addr) == 0)
         {
+            if(portBind != NULL)
+            {
+                int expLen = sizeof(exp_addr);
+                getsockname(sock, (struct sockaddr *)&exp_addr, &expLen);
+                *portBind = ntohs(exp_addr.sin_port);
+            }
+
             return sock;
         }
         else
-            return -1;
+            return 0;
     }
     else
-        return -1;
+        return 0;
 }
 
 MySocket creerSocketUdpServer (int portEcoute)
 {
-    MySocket sock = -1;
+    MySocket sock = 0;
     struct sockaddr_in exp_addr ;
 
     sock = socket (PF_INET, SOCK_DGRAM, 0) ;
@@ -56,10 +63,10 @@ MySocket creerSocketUdpServer (int portEcoute)
             return sock;
         }
         else
-            return -1;
+            return 0;
     }
     else
-        return -1;
+        return 0;
 }
 
 int sendUdpMessageTo(MySocket socket , char * buffer , char * ipAddress , int port )

@@ -5,15 +5,20 @@ typedef struct t_ConfigCoordinateur
 }ConfigCoordinateur;
 ConfigCoordinateur g_Config;
 
+typedef struct t_StructSonde
+{
+    float Moyenne;
+    int id;
+    int id_routeur;
+    int AlerteAffichee;
+}TypeSonde;
+
 
 void * waitForClient (void * pData);
-void * sendMoyenneCoordinateur(void * pData);
 
-/*ListeChainee * ListeTemperature;
-ListeChainee * ListeCompteur;*/
+ListeChainee * ListeSondes;
 
 MySocket SocketEcoute;
-MySocket SocketCoord;
 
 int main()
 {
@@ -39,7 +44,6 @@ int main()
 
 
     SocketEcoute = creerSocketUdpServer ( g_Config.portEcoute);
-    //SocketCoord = creerSocketUdpClient();
 
     if(SocketEcoute > 0)
     {
@@ -54,10 +58,25 @@ int main()
     pthread_t Thread_waitForClient ;//, Thread_SendMoyenne;
     pthread_create(&Thread_waitForClient,0,waitForClient,(void *)&SocketEcoute);
 
-  // pthread_create(&Thread_SendMoyenne,0,sendMoyenneCoordinateur,(void *)&SocketCoord);
 
     while(1)
-        MySleep(1000);
+    {
+        ListeChainee * elemSonde = ListeSondes;
+        while(elemSonde != NULL)
+        {
+            TypeSonde * sonde = ((TypeSonde *)elemSonde->data);
+            if(sonde->Moyenne > 49 && sonde->AlerteAffichee == 0)
+            {
+                char Time[10];
+                getStrTime(Time);
+                sonde->AlerteAffichee = 1;
+                printf("%s Depassement de temp sur la sonde : %i, routeur : %i, temperature : %3.3f\n",Time,sonde->id,sonde->id_routeur,sonde->Moyenne);
+
+            }
+            elemSonde = elemSonde->next;
+        }
+         MySleep(1000);
+    }
 
     deInitReseau();
     return 0;
@@ -81,71 +100,84 @@ void * waitForClient (void * pData)
         n = recvfrom (sock, buff, sizeof(buff),0,(struct sockaddr *)&exp_addr,(socklen_t *)&exp_lenth);
 
         /* Recuperation des informations sur l'envoyeur */
-        char * ip = ( char * ) malloc(sizeof(char) * 20);
+      /* char * ip = ( char * ) malloc(sizeof(char) * 20);
         sprintf ( ip, "%s", inet_ntoa (exp_addr.sin_addr));
         int port = ntohs(exp_addr.sin_port);
 
-       printf("Message recu : %s:%i => (%i)[%s]\n",ip,port,n,buff);
+       printf("Message recu : %s:%i => (%i)[%s]\n",ip,port,n,buff);*/
 
 
-//        int idSonde = -1;
-//        float temperatureSonde = -1.0;
-//        /* Le protocole doit être "T,<ID>,<TEMP>,E" */
-//
-//        if(*buff == 'T' && *(buff + strlen(buff)-1 ) == 'E')
-//        {
-//            char * posVirgule, * nextVirgule;
-//            posVirgule=strchr(buff,',');
-//
-//            if(posVirgule!=NULL)
-//            {
-//                nextVirgule=strchr(posVirgule+1,',');
-//                if(nextVirgule!=NULL)
-//                {
-//                    char id[5] = "";
-//                    strncpy(id,posVirgule+1,(nextVirgule-posVirgule) -1 );
-//                    idSonde = atoi(id);
-//
-//                    posVirgule = nextVirgule;
-//                    nextVirgule=strchr(posVirgule+1,',');
-//                    if(nextVirgule!=NULL)
-//                    {
-//                        char temperature[20] = "";
-//                        strncpy(temperature,posVirgule+1,(nextVirgule-posVirgule) -1 );
-//                        temperatureSonde = atof(temperature);
-//                    }
-//                }
-//            }
-//        }
-//        else
-//        {
-//            /* Si le protocole n'est pas bon on passe en affichant un message */
-//            printf("PROTOCOL_ERROR !\n");
-//            continue;
-//        }
-//
-//        if(temperatureSonde != -1.0 && idSonde != -1)
-//        {
-//            float * ElementTemp = getValueAtID(ListeTemperature,idSonde);
-//            int * ElementCompteur = getValueAtID(ListeCompteur,idSonde);
-//            if(ElementTemp == NULL)
-//            {
-//                float * DataListeTemp = malloc(sizeof (float));
-//                int * DataListeCpt = malloc(sizeof (int));
-//                *DataListeCpt = 1;
-//                *DataListeTemp = temperatureSonde;
-//                ListeTemperature = AddElementListeID( DataListeTemp, ListeTemperature,0,idSonde);
-//
-//                ListeCompteur = AddElementListeID( DataListeCpt, ListeCompteur,0,idSonde);
-//            }
-//            else
-//            {
-//                *ElementTemp += temperatureSonde;
-//                *ElementCompteur += 1;
-//            }
-//
-//        }
-        free(ip);
+        int idSonde = -1;
+        int idRouteur = -1;
+        float temperatureSonde = -1.0;
+        /* Le protocole doit être "M,<ID_ROUTEUR>,<ID_SONDE>,<TEMP>,E" */
+
+        if(*buff == 'M' && *(buff + strlen(buff)-1 ) == 'E') // Le debut et la fin sont M et E
+        {
+            char * posVirgule, * nextVirgule;
+            posVirgule=strchr(buff,',');
+
+            if(posVirgule!=NULL)
+            {
+                nextVirgule=strchr(posVirgule+1,',');
+                if(nextVirgule!=NULL)
+                {
+                    char strId[5] = "";
+                    strncpy(strId,posVirgule+1,(nextVirgule-posVirgule) -1 );
+                    idRouteur = atoi(strId);
+
+                    posVirgule = nextVirgule;
+                    nextVirgule=strchr(posVirgule+1,',');
+                    if(nextVirgule!=NULL)
+                    {
+                        memset(strId,'0',sizeof(strId));
+                        strncpy(strId,posVirgule+1,(nextVirgule-posVirgule) -1 );
+                        idSonde = atoi(strId);
+
+                        posVirgule = nextVirgule;
+                        nextVirgule=strchr(posVirgule+1,',');
+                        if(nextVirgule!=NULL)
+                        {
+                            char temperature[20] = "";
+                            strncpy(temperature,posVirgule+1,(nextVirgule-posVirgule) -1 );
+                            temperatureSonde = atof(temperature);
+                        }
+                    }
+
+                }
+            }
+        }
+        else
+        {
+            /* Si le protocole n'est pas bon on passe en affichant un message */
+            printf("PROTOCOL_ERROR !\n");
+            continue;
+        }
+
+        if(temperatureSonde != -1.0 && idSonde != -1 && idRouteur != -1)
+        {
+
+            TypeSonde * Sonde = getValueAtID(ListeSondes,idSonde);
+            if(Sonde == NULL)
+            {
+                TypeSonde * ElementSonde = malloc(sizeof (TypeSonde));
+
+                ElementSonde->id = idSonde;
+                ElementSonde->id_routeur = idRouteur;
+                ElementSonde->Moyenne = temperatureSonde;
+                ElementSonde->AlerteAffichee = 0;
+                ListeSondes = AddElementListeID(ElementSonde,ListeSondes,0,idSonde);
+            }
+            else
+            {
+               /* Sonde->id = idSonde;
+                ElementSonde->id_routeur = idRouteur;*/
+                Sonde->AlerteAffichee = 0;
+                Sonde->Moyenne = temperatureSonde; // Mise a jour de la température moyenne
+            }
+
+        }
+       // free(ip);
     }
     return NULL;
 }

@@ -57,23 +57,28 @@ int main()
     }
      g_Config.intervalEnvoi = atoi(strConfig);
 
-    if((ret = getValue(ConfigFile,"ID",strConfig)) != 1)
+    /*if((ret = getValue(ConfigFile,"ID",strConfig)) != 1)
     {
         printf("Erreur dans la lecture de la configuration ID! [%i]",ret);
         return -1;
     }
-    g_Config.idRouteur = atoi(strConfig);
+    g_Config.idRouteur = atoi(strConfig);*/
 
+
+
+
+
+    SocketEcoute = creerSocketUdpServer ( g_Config.portEcoute);
+    int portBind = 0;
+    SocketCoord = creerSocketUdpClient(&portBind);
+
+    g_Config.idRouteur = portBind;
 
     printf("Routeur ID : %i\n", g_Config.idRouteur);
     printf("Ecoute sur : %i\n", g_Config.portEcoute);
     printf("Coordinateur : %s:%i\n",g_Config.ipCoordinateur,g_Config.portCoordinateur);
     printf("Delais : %i s\n",g_Config.intervalEnvoi);
     printf("\n");
-
-
-    SocketEcoute = creerSocketUdpServer ( g_Config.portEcoute);
-    SocketCoord = creerSocketUdpClient();
 
     if(SocketEcoute > 0)
     {
@@ -84,6 +89,16 @@ int main()
         printf("Erreur lors de la creation de la socket ! %i",SocketEcoute);
         return -1;
     }
+    if(SocketCoord > 0)
+    {
+        printf("Creation de la socket d'envoi reussi !\n");
+    }
+    else
+    {
+        printf("Erreur lors de la creation de la socket ! %i",SocketEcoute);
+        return -1;
+    }
+
 
     pthread_t Thread_waitForClient , Thread_SendMoyenne;
     pthread_create(&Thread_waitForClient,0,waitForClient,(void *)&SocketEcoute);
@@ -119,11 +134,11 @@ void * waitForClient (void * pData)
         n = recvfrom (sock, buff, sizeof(buff),0,(struct sockaddr *)&exp_addr,(socklen_t *)&exp_lenth);
 
         /* Recuperation des informations sur l'envoyeur */
-        /*char * ip = ( char * ) malloc(sizeof(char) * 20);
+       /* char * ip = ( char * ) malloc(sizeof(char) * 20);
         sprintf ( ip, "%s", inet_ntoa (exp_addr.sin_addr));
-        int port = ntohs(exp_addr.sin_port);*/
+        int port = ntohs(exp_addr.sin_port);
 
-       // printf("Message recu : %s:%i => (%i)[%s]\n",ip,port,n,buff);
+       printf("Message recu : %s:%i => (%i)[%s]\n",ip,port,n,buff);*/
 
 
         int idSonde = -1;
@@ -221,7 +236,7 @@ float MoyenneSonde = -1.0;
         printf("Moyenne pour la sonde %i : %f | Envoi -> ",getIDAt(ListeCompteur,i),MoyenneSonde);
 
         char buffer[80];
-        sprintf(buffer,"M,%i,%f,E",i,MoyenneSonde);
+        sprintf(buffer,"M,%i,%i,%f,E",g_Config.idRouteur,getIDAt(ListeCompteur,i),MoyenneSonde);
         int ret = sendUdpMessageTo(sock , buffer , g_Config.ipCoordinateur ,  g_Config.portCoordinateur );
         if(ret == -1)
         {

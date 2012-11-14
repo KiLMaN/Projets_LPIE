@@ -16,7 +16,10 @@ int main()
     int port = 8002 ;
     int intervalEnvoi = 20;
     int ID = 0;
-    MySocket SocketRouteur = creerSocketUdpClient();
+
+    int portBind = 0;
+    MySocket SocketRouteur = creerSocketUdpClient(&portBind);
+
 
 
     if( SocketRouteur > 0)
@@ -45,13 +48,15 @@ int main()
         }
         intervalEnvoi = atoi(strConfig);
 
-        if((ret = getValue(ConfigFile,"ID",strConfig)) != 1)
+        /*if((ret = getValue(ConfigFile,"ID",strConfig)) != 1)
         {
             printf("Erreur dans la lecture de la configuration ID! [%i]",ret);
             return -1;
         }
-        ID = atoi(strConfig);
+        ID = atoi(strConfig);*/
 
+        // ID = PORTBIND
+        ID = portBind;
 
         printf("Sonde ID : %i\n",ID);
         printf("Routeur : %s:%i\n",ip,port);

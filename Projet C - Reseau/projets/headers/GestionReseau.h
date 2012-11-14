@@ -21,7 +21,7 @@ typedef socklen_t MySocketLenght ;
 
 void initReseau();
 void deInitReseau();
-MySocket creerSocketUdpClient ();
+MySocket creerSocketUdpClient (int * portBind);
 MySocket creerSocketUdpServer (int portEcoute);
 int sendUdpMessageTo(MySocket socket , char * buffer , char * ipAddress , int port );
 

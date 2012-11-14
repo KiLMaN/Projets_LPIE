@@ -41,7 +41,7 @@ int getValue(FILE * fichier ,char * var,char * retVal)
                 int positionChar = posChar-chaineLue+1;
                 strncpy ( id, chaineLue, positionChar-1 );
 
-                /* Test si c'est la varaible que l'on veux */
+                /* Test si c'est la variable que l'on veux */
                 if(strcmp(var,id) == 0)
                 {
                     /* Copie dans le buffer de sortie */
