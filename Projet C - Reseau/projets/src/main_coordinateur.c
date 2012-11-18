@@ -1,4 +1,8 @@
 #include "stdafx.h"
+
+#define SEUIL_MAX_TEMP 50 // degreés ( a partir de quelle température est affiché une alarme )
+#define SEUIL_DELAIS_SONDE 2 // secondes ( combien de temps attend une mesure d'une sonde au maximum)
+
 typedef struct t_ConfigCoordinateur
 {
     int portEcoute;
@@ -11,6 +15,8 @@ typedef struct t_StructSonde
     int id;
     int id_routeur;
     int AlerteAffichee;
+    int NouvelleVal; // Flag pour savoir si une nouvelle mesure a été envoyée depuis l'affichage de la derniere
+    int TimeLastVal; // Heure d'arrive d'une nouvelle mesure envoyée
 }TypeSonde;
 
 
@@ -62,20 +68,37 @@ int main()
     while(1)
     {
         ListeChainee * elemSonde = ListeSondes;
+        int b_MesuresOk = 1;
         while(elemSonde != NULL)
         {
             TypeSonde * sonde = ((TypeSonde *)elemSonde->data);
-            if(sonde->Moyenne > 49 && sonde->AlerteAffichee == 0)
+            if(sonde->NouvelleVal == 0 && (sonde->TimeLastVal > (time(NULL) - SEUIL_DELAIS_SONDE ))) // Si on a pas de mesure et que la derniere date d'apres le seuil
             {
-                char Time[10];
-                getStrTime(Time);
-                sonde->AlerteAffichee = 1;
-                printf("%s Depassement de temp sur la sonde : %i, routeur : %i, temperature : %3.3f\n",Time,sonde->id,sonde->id_routeur,sonde->Moyenne);
-
+               // printf("Attente");
+                b_MesuresOk = 0; // On attend encore
             }
             elemSonde = elemSonde->next;
         }
-         MySleep(1000);
+
+        if(b_MesuresOk)
+        {
+            elemSonde = ListeSondes;
+            while(elemSonde != NULL)
+            {
+                TypeSonde * sonde = ((TypeSonde *)elemSonde->data);
+                sonde->NouvelleVal = 0;
+                if(sonde->Moyenne > SEUIL_MAX_TEMP && sonde->AlerteAffichee == 0)
+                {
+                    char Time[10];
+                    getStrTime(Time);
+                    sonde->AlerteAffichee = 1;
+                    printf("%s ATTENTION sur la sonde: %i, routeur: %i, temperature: %3.3f\n",Time,sonde->id,sonde->id_routeur,sonde->Moyenne);
+
+                }
+                elemSonde = elemSonde->next;
+            }
+        }
+        MySleep(1000);
     }
 
     deInitReseau();
@@ -166,6 +189,8 @@ void * waitForClient (void * pData)
                 ElementSonde->id_routeur = idRouteur;
                 ElementSonde->Moyenne = temperatureSonde;
                 ElementSonde->AlerteAffichee = 0;
+                ElementSonde->NouvelleVal=1;
+                ElementSonde->TimeLastVal=time(NULL);
                 ListeSondes = AddElementListeID(ElementSonde,ListeSondes,0,idSonde);
             }
             else
@@ -173,6 +198,8 @@ void * waitForClient (void * pData)
                /* Sonde->id = idSonde;
                 ElementSonde->id_routeur = idRouteur;*/
                 Sonde->AlerteAffichee = 0;
+                Sonde->NouvelleVal=1;
+                Sonde->TimeLastVal=time(NULL);
                 Sonde->Moyenne = temperatureSonde; // Mise a jour de la température moyenne
             }
 

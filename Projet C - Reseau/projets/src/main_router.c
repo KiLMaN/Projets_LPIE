@@ -7,16 +7,24 @@ typedef struct t_ConfigRouteur
     int portEcoute;
     int intervalEnvoi;
     int idRouteur;
-}ConfigRouteur;
+} ConfigRouteur;
 
 ConfigRouteur g_Config;
+
+typedef struct t_StructSondeR{
+    int idSonde;
+    float tempSonde;
+    int cptVal;
+} TypeSondeR;
+
+
 
 
 void * waitForClient (void * pData);
 void * sendMoyenneCoordinateur(void * pData);
 
-ListeChainee * ListeTemperature;
-ListeChainee * ListeCompteur;
+ListeChainee * ListeSondes;
+//ListeChainee * ListeCompteur;
 
 MySocket SocketEcoute;
 MySocket SocketCoord;
@@ -55,7 +63,7 @@ int main()
         printf("Erreur dans la lecture de la configuration INTERVAL! [%i]",ret);
         return -1;
     }
-     g_Config.intervalEnvoi = atoi(strConfig);
+    g_Config.intervalEnvoi = atoi(strConfig);
 
     /*if((ret = getValue(ConfigFile,"ID",strConfig)) != 1)
     {
@@ -121,7 +129,7 @@ void * waitForClient (void * pData)
     MySocket sock = *((MySocket *)pData); // Recuperation de la socket
     char buff[50];
     int n ;
-     struct sockaddr_in exp_addr;
+    struct sockaddr_in exp_addr;
     memset (&exp_addr,0, sizeof exp_addr) ;
     int exp_lenth= sizeof(exp_addr);
 
@@ -134,11 +142,11 @@ void * waitForClient (void * pData)
         n = recvfrom (sock, buff, sizeof(buff),0,(struct sockaddr *)&exp_addr,(socklen_t *)&exp_lenth);
 
         /* Recuperation des informations sur l'envoyeur */
-       /* char * ip = ( char * ) malloc(sizeof(char) * 20);
-        sprintf ( ip, "%s", inet_ntoa (exp_addr.sin_addr));
-        int port = ntohs(exp_addr.sin_port);
+        /* char * ip = ( char * ) malloc(sizeof(char) * 20);
+         sprintf ( ip, "%s", inet_ntoa (exp_addr.sin_addr));
+         int port = ntohs(exp_addr.sin_port);
 
-       printf("Message recu : %s:%i => (%i)[%s]\n",ip,port,n,buff);*/
+        printf("Message recu : %s:%i => (%i)[%s]\n",ip,port,n,buff);*/
 
 
         int idSonde = -1;
@@ -179,26 +187,24 @@ void * waitForClient (void * pData)
 
         if(temperatureSonde != -1.0 && idSonde != -1)
         {
-            float * ElementTemp = getValueAtID(ListeTemperature,idSonde);
-            int * ElementCompteur = getValueAtID(ListeCompteur,idSonde);
-            if(ElementTemp == NULL)
+            TypeSondeR * ElementSonde = getValueAtID(ListeSondes,idSonde);
+            //int * ElementCompteur = getValueAtID(ListeCompteur,idSonde);
+            if(ElementSonde == NULL)
             {
-                float * DataListeTemp = malloc(sizeof (float));
-                int * DataListeCpt = malloc(sizeof (int));
-                *DataListeCpt = 1;
-                *DataListeTemp = temperatureSonde;
-                ListeTemperature = AddElementListeID( DataListeTemp, ListeTemperature,0,idSonde);
+                TypeSondeR * Sonde =      malloc(sizeof (TypeSondeR));
 
-                ListeCompteur = AddElementListeID( DataListeCpt, ListeCompteur,0,idSonde);
+                Sonde->idSonde = idSonde;
+                Sonde->tempSonde = temperatureSonde;
+                Sonde->cptVal = 1;
+                ListeSondes = AddElementListeID( Sonde, ListeSondes,0,idSonde);
             }
             else
             {
-                *ElementTemp += temperatureSonde;
-                *ElementCompteur += 1;
+                ElementSonde->tempSonde += temperatureSonde;
+                ElementSonde->cptVal++;
             }
-
         }
-       // free(ip);
+        // free(ip);
     }
     return NULL;
 }
@@ -208,51 +214,38 @@ void * sendMoyenneCoordinateur(void * pData)
     MySocket sock = *((MySocket *)pData); // Recuperation de la socket
     while(1)
     {
-         MySleep(10000);
-    // printf("Calcul des moyennes ! \n");
+        MySleep(1000); // reduit la consomation CPU
+        // printf("Calcul des moyennes ! \n");
 
-    int nbSondes = LengthListe(ListeTemperature);
-    if(nbSondes != LengthListe(ListeCompteur))
-    {
-        printf("Erreur : les listes ne sont pas synchronisées ! \n");
-    }
+        int nbSondes = LengthListe(ListeSondes);
 
-    int i = 0;
-    while(i < nbSondes)
-    {
-        // TODO : AJOUTER MUTEX PROTECTION */
-        float * DataListeTemp = getValueAt(ListeTemperature,i);
-        int * DataListeCpt = getValueAt(ListeCompteur,i);
-
-float MoyenneSonde = -1.0;
-        if(*DataListeCpt != 0)
-            MoyenneSonde = *DataListeTemp / *DataListeCpt;
-
-
-        *DataListeTemp = 0;
-        *DataListeCpt = 0;
-        // TODO : END MUTEX PROTECTION */
-
-        printf("Moyenne pour la sonde %i : %f | Envoi -> ",getIDAt(ListeCompteur,i),MoyenneSonde);
-
-        char buffer[80];
-        sprintf(buffer,"M,%i,%i,%f,E",g_Config.idRouteur,getIDAt(ListeCompteur,i),MoyenneSonde);
-        int ret = sendUdpMessageTo(sock , buffer , g_Config.ipCoordinateur ,  g_Config.portCoordinateur );
-        if(ret == -1)
+        int i = 0;
+        while(i < nbSondes)
         {
-            printf(" Erreur lors de l'envoi du message ! (%i)\n",ret);
+
+            TypeSondeR * Sonde = getValueAt(ListeSondes,i);
+            if(Sonde->cptVal > 0) // Si on à reçu une nouvelle mesure
+            {
+                float MoyenneSonde = Sonde->tempSonde / Sonde->cptVal;
+                Sonde->tempSonde = 0;
+                Sonde->cptVal = 0;
+
+                printf("Moyenne pour la sonde %i : %f | Envoi -> ",Sonde->idSonde,MoyenneSonde);
+
+                char buffer[80];
+                sprintf(buffer,"M,%i,%i,%f,E",g_Config.idRouteur,Sonde->idSonde,MoyenneSonde);
+                int ret = sendUdpMessageTo(sock , buffer , g_Config.ipCoordinateur ,  g_Config.portCoordinateur );
+                if(ret == -1)
+                {
+                    printf(" Erreur lors de l'envoi du message ! (%i)\n",ret);
+                }
+                else
+                {
+                    printf(" OK \n");
+                }
+            }
+            i++;
         }
-        else
-        {
-            printf(" OK \n");
-        }
-
-
-        i++;
-    }
-
-
-
     }
     return NULL;
 }
