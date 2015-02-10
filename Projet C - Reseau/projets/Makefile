@@ -22,7 +22,7 @@ OBJ= $(SRC:$(SRCDIR)/%.c=$(LIBDIR)/%.o)
 SRCPP= $(wildcard $(SRCDIR)/*.cpp)
 OBJCPP= $(SRCPP:$(SRCDIR)/%.cpp=$(LIBDIR)/%.o)
  
-all: Sonde Router Coordinateur
+all: Sonde Router Coordinateur cpConf
  
 #Création de l'exécutable
 Sonde: $(LIBDIR)/main_sonde.o $(LIBDIR)/parserConfig.o $(LIBDIR)/simSonde.o $(LIBDIR)/GestionReseau.o $(LIBDIR)/ListeChainee.o $(LIBDIR)/utils.o 
@@ -52,3 +52,8 @@ clean:
 Clean: clean
 	rm $(BINDIR)/*
 
+
+cpConf:
+        @for file in config_*; do \
+                cp "$$file" $(BINDIR)/ -f; \
+        done
