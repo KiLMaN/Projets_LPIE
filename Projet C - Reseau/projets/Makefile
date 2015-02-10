@@ -54,6 +54,6 @@ Clean: clean
 
 
 cpConf:
-        @for file in config_*; do \
-                cp "$$file" $(BINDIR)/ -f; \
-        done
+	@for file in config_*; do \
+		cp "$$file" $(BINDIR)/ -f; \
+	done
